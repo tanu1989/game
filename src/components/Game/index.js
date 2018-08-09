@@ -6,6 +6,7 @@ import Timer from "../Timer";
 import DifficultyPicker from "../DifficultyPicker";
 import GameGrid from "../GameGrid";
 import { GameWrapper } from "./styles";
+import _ from "lodash";
 
 const difficultyLevels = levels => levels.map(level => level.difficulty);
 
@@ -13,7 +14,8 @@ class Game extends PureComponent {
   state = {
     activeCards: [],
     count: 0,
-    cardInView: null
+    cardInView: null,
+    visibleCards: []
   };
   componentDidMount() {
     this.props.fetchGameData();
@@ -44,26 +46,45 @@ class Game extends PureComponent {
     this.setState({
       activeCards: filteredArr,
       count: filteredArr.length,
-      cardInView: null
+      cardInView: null,
+      visibleCards: []
     });
   };
 
   diffCards = () => {
     this.setState({
-      cardInView: null
+      cardInView: null,
+      visibleCards: []
     });
   };
 
-  onCardClick = obj => {
+  newEntry = obj => {
+    this.setState({
+      cardInView: obj
+    });
+  };
+
+  //Adding a debounce to make the transition a little more visible
+  checkConditions = _.debounce(obj => {
     if (!this.state.cardInView) {
-      this.setState({
-        cardInView: obj
-      });
+      this.newEntry(obj);
     } else if (this.state.cardInView.card === obj.card) {
       this.sameCards(obj);
     } else {
       this.diffCards();
     }
+  }, 400);
+
+  onCardClick = obj => {
+    const id = obj.id;
+    this.setState(
+      state => ({
+        visibleCards: [...state.visibleCards, id]
+      }),
+      () => {
+        this.checkConditions(obj);
+      }
+    );
   };
 
   render() {
@@ -78,7 +99,11 @@ class Game extends PureComponent {
           onSelect={this.onDifficultySelect}
         />
         {difficultyLevel && (
-          <GameGrid cards={this.state.activeCards} onClick={this.onCardClick} />
+          <GameGrid
+            cards={this.state.activeCards}
+            visibleCards={this.state.visibleCards}
+            onClick={this.onCardClick}
+          />
         )}
         <div>Let the games begin (here).</div>
       </GameWrapper>

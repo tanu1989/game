@@ -12,6 +12,8 @@ export const GameTile = styled.div`
   margin: 12px;
   padding-top: 20px;
   cursor: pointer;
+
+  background-color: ${props => (props.show ? "transparent" : "black")};
 `;
 
 export const CardIcon = styled.span`
