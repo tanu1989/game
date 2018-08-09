@@ -1,0 +1,9 @@
+{
+  "presets": ["es2015", "stage-0", "react"],
+  "plugins": [
+    "transform-decorators-legacy",
+    "transform-react-remove-prop-types",
+    "babel-plugin-transform-object-rest-spread",
+    "babel-plugin-styled-components"
+  ]
+}

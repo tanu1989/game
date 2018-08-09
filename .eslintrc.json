@@ -1,0 +1,8 @@
+{
+  "parser": "babel-eslint",
+  "rules": {
+    "no-return-assign": ["error", "except-parens"],
+    "import/no-restricted-paths": "on",
+    "react/require-default-props": "off"
+  }
+}
