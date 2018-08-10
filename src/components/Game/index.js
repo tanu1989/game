@@ -2,23 +2,35 @@ import React, { PureComponent } from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import * as actions from "../../actions/index";
-import Timer from "../Timer";
 import DifficultyPicker from "../DifficultyPicker";
 import GameGrid from "../GameGrid";
 import { GameWrapper } from "./styles";
 import _ from "lodash";
+import Timer from "../Timer";
+import { formatTime } from "../../utils/format";
 
 const difficultyLevels = levels => levels.map(level => level.difficulty);
 
+const initialState = {
+  count: 0,
+  cardInView: null,
+  visibleCards: []
+};
+
 class Game extends PureComponent {
   state = {
-    activeCards: [],
-    count: 0,
-    cardInView: null,
-    visibleCards: []
+    ...initialState,
+    timeTrack: 0,
+    activeCards: []
   };
   componentDidMount() {
     this.props.fetchGameData();
+  }
+
+  componentWillUpdate(nextProps, nextState) {
+    if (nextState.count === 0 && this.state.count === 2) {
+      this.props.completeGame(formatTime(this.state.timeTrack));
+    }
   }
 
   onDifficultySelect = level => {
@@ -34,12 +46,13 @@ class Game extends PureComponent {
 
     this.setState({
       activeCards: arr.cards,
-      count: arr.cards.length
+      count: arr.cards.length,
+      timeTrack: 0
     });
     this.props.setDifficulty(level);
   };
 
-  sameCards = obj => {
+  matchingCards = obj => {
     const filteredArr = this.state.activeCards.filter(
       el => el.card !== obj.card
     );
@@ -64,22 +77,35 @@ class Game extends PureComponent {
     });
   };
 
+  sameCards = () => {
+    this.setState(state => ({
+      ...state,
+      ...initialState
+    }));
+  };
+
   //Adding a debounce to make the transition a little more visible
   checkConditions = _.debounce(obj => {
     if (!this.state.cardInView) {
       this.newEntry(obj);
+    } else if (obj.id === this.state.cardInView.id) {
+      this.sameCards();
     } else if (this.state.cardInView.card === obj.card) {
-      this.sameCards(obj);
+      this.matchingCards(obj);
     } else {
       this.diffCards();
     }
-  }, 400);
+  }, 600);
 
   onCardClick = obj => {
     const id = obj.id;
+
+    const { cardInView, visibleCards } = this.state;
+    const arr =
+      cardInView && obj.id === cardInView.id ? [] : [...visibleCards, id];
     this.setState(
       state => ({
-        visibleCards: [...state.visibleCards, id]
+        visibleCards: arr
       }),
       () => {
         this.checkConditions(obj);
@@ -87,25 +113,43 @@ class Game extends PureComponent {
     );
   };
 
+  record = time => {
+    this.setState({
+      timeTrack: time
+    });
+  };
+
   render() {
-    const { gameData, difficultyLevel } = this.props;
+    const {
+      gameData,
+      difficultyLevel,
+      completedTime,
+      isGameComplete,
+      recordCompleteTime
+    } = this.props;
+
+    const { activeCards, visibleCards, timeTrack } = this.state;
 
     return (
       <GameWrapper>
         <h1>Memory Board Game</h1>
-        <Timer />
+        <div>Pick a difficulty level</div>
         <DifficultyPicker
+          activeButton={difficultyLevel}
           levels={difficultyLevels(gameData.levels)}
           onSelect={this.onDifficultySelect}
         />
-        {difficultyLevel && (
+        {isGameComplete && <div>{`Game is complete in ${completedTime}`}</div>}
+
+        {activeCards.length !== 0 && (
           <GameGrid
-            cards={this.state.activeCards}
-            visibleCards={this.state.visibleCards}
+            timeTrack={timeTrack}
+            recordTime={this.record}
+            cards={activeCards}
+            visibleCards={visibleCards}
             onClick={this.onCardClick}
           />
         )}
-        <div>Let the games begin (here).</div>
       </GameWrapper>
     );
   }
@@ -115,18 +159,24 @@ Game.propTypes = {
   gameData: PropTypes.object.isRequired,
   isLoading: PropTypes.bool.isRequired,
   difficultyLevel: PropTypes.string.isRequired,
-  setDifficulty: PropTypes.func.isRequired
+  setDifficulty: PropTypes.func.isRequired,
+  isGameComplete: PropTypes.bool.isRequired,
+  completeGame: PropTypes.func.isRequired,
+  completedTime: PropTypes.string.isRequired
 };
 
 const mapStateToProps = state => ({
   gameData: state.game.gameData,
   isLoading: state.game.isLoading,
-  difficultyLevel: state.game.difficultyLevel
+  difficultyLevel: state.game.difficultyLevel,
+  isGameComplete: state.game.isGameComplete,
+  completedTime: state.game.completedTime
 });
 
 const mapDispatchToProps = {
   fetchGameData: actions.fetchGameData,
-  setDifficulty: actions.setDifficulty
+  setDifficulty: actions.setDifficulty,
+  completeGame: actions.completeGame
 };
 
 export const DisconnectedGame = Game;

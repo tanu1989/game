@@ -1,14 +1,22 @@
 import React from "react";
 import PropTypes from "prop-types";
+import { DPWrapper, DifficultyButton } from "./styles";
+import _ from "lodash";
 
-//TODO: change the div to something else - or add a role
-const DifficultyPicker = ({ levels, onSelect }) => {
-  return levels.map(level => (
-    <div onClick={() => onSelect(level)}>{level}</div>
-  ));
+const DifficultyPicker = ({ levels, onSelect, activeButton }) => {
+  return (
+    <DPWrapper>
+      {levels.map(level => (
+        <DifficultyButton onClick={() => onSelect(level)}>
+          {_.startCase(level)}
+        </DifficultyButton>
+      ))}
+    </DPWrapper>
+  );
 };
 
 DifficultyPicker.propTypes = {
+  activeButton: PropTypes.string.isRequired,
   levels: PropTypes.arrayOf(PropTypes.string),
   onSelect: PropTypes.func.isRequired
 };

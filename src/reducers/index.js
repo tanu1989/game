@@ -1,12 +1,19 @@
 import { combineReducers } from "redux";
-import { GET_GAME_DATA, SET_DIFFICULTY } from "../actions/index";
+import {
+  GET_GAME_DATA,
+  SET_DIFFICULTY,
+  FINISH_GAME,
+  RECORD_FINISH_TIME
+} from "../actions/index";
 
 const initialState = {
   isLoading: false,
   gameData: {
     levels: []
   },
-  difficultyLevel: ""
+  difficultyLevel: "",
+  isGameComplete: false,
+  completedTime: null
 };
 
 const game = (state = initialState, action) => {
@@ -16,7 +23,18 @@ const game = (state = initialState, action) => {
     case GET_GAME_DATA.SUCCESS:
       return { ...state, isLoading: false, gameData: action.payload };
     case SET_DIFFICULTY:
-      return { ...state, difficultyLevel: action.payload };
+      return {
+        ...state,
+        isGameComplete: false,
+        difficultyLevel: action.payload
+      };
+    case FINISH_GAME:
+      return {
+        ...state,
+        difficultyLevel: "",
+        isGameComplete: true,
+        completedTime: action.payload
+      };
     default:
       return state;
   }

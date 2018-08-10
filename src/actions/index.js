@@ -1,12 +1,19 @@
-import { makeAsyncActions, makeActions } from "../utils";
+import { makeAsyncActions, makeActions } from "../utils/actionUtils";
 import * as api from "../api/index";
 
 export const { GET_GAME_DATA } = makeAsyncActions("NYT", ["GET_GAME_DATA"]);
 
-export const { SET_DIFFICULTY } = makeActions("NYT", ["SET_DIFFICULTY"]);
+export const { SET_DIFFICULTY, FINISH_GAME } = makeActions("NYT", [
+  "SET_DIFFICULTY",
+  "FINISH_GAME"
+]);
 
 export const setDifficulty = level => {
   return { type: SET_DIFFICULTY, payload: level };
+};
+
+export const completeGame = time => {
+  return { type: FINISH_GAME, payload: time };
 };
 
 export const fetchGameData = () => {
