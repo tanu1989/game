@@ -3,10 +3,10 @@ import * as api from "../api/index";
 
 export const { GET_GAME_DATA } = makeAsyncActions("NYT", ["GET_GAME_DATA"]);
 
-export const { SET_DIFFICULTY, FINISH_GAME } = makeActions("NYT", [
-  "SET_DIFFICULTY",
-  "FINISH_GAME"
-]);
+export const { SET_DIFFICULTY, FINISH_GAME, RESTART_GAME } = makeActions(
+  "NYT",
+  ["SET_DIFFICULTY", "FINISH_GAME", "RESTART_GAME"]
+);
 
 export const setDifficulty = level => {
   return { type: SET_DIFFICULTY, payload: level };
@@ -23,4 +23,8 @@ export const fetchGameData = () => {
       dispatch({ type: GET_GAME_DATA.SUCCESS, payload: response });
     });
   };
+};
+
+export const handleGameRestart = () => {
+  return { type: RESTART_GAME };
 };

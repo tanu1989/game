@@ -4,7 +4,7 @@ import { connect } from "react-redux";
 import * as actions from "../../actions/index";
 import DifficultyPicker from "../DifficultyPicker";
 import GameGrid from "../GameGrid";
-import { GameWrapper } from "./styles";
+import { GameWrapper, StyledButton, GameCompleteWrapper } from "./styles";
 import _ from "lodash";
 import Timer from "../Timer";
 import { formatTime } from "../../utils/format";
@@ -125,7 +125,8 @@ class Game extends PureComponent {
       difficultyLevel,
       completedTime,
       isGameComplete,
-      recordCompleteTime
+      recordCompleteTime,
+      handleGameRestart
     } = this.props;
 
     const { activeCards, visibleCards, timeTrack } = this.state;
@@ -139,8 +140,12 @@ class Game extends PureComponent {
           levels={difficultyLevels(gameData.levels)}
           onSelect={this.onDifficultySelect}
         />
-        {isGameComplete && <div>{`Game is complete in ${completedTime}`}</div>}
-
+        {isGameComplete && (
+          <GameCompleteWrapper>
+            <div>{`Game is complete in ${completedTime}`}</div>
+            <StyledButton onClick={handleGameRestart}>Start over</StyledButton>
+          </GameCompleteWrapper>
+        )}
         {activeCards.length !== 0 && (
           <GameGrid
             timeTrack={timeTrack}
@@ -176,7 +181,8 @@ const mapStateToProps = state => ({
 const mapDispatchToProps = {
   fetchGameData: actions.fetchGameData,
   setDifficulty: actions.setDifficulty,
-  completeGame: actions.completeGame
+  completeGame: actions.completeGame,
+  handleGameRestart: actions.handleGameRestart
 };
 
 export const DisconnectedGame = Game;

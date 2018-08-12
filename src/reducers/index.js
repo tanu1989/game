@@ -3,7 +3,8 @@ import {
   GET_GAME_DATA,
   SET_DIFFICULTY,
   FINISH_GAME,
-  RECORD_FINISH_TIME
+  RECORD_FINISH_TIME,
+  RESTART_GAME
 } from "../actions/index";
 
 const initialState = {
@@ -34,6 +35,12 @@ const game = (state = initialState, action) => {
         difficultyLevel: "",
         isGameComplete: true,
         completedTime: action.payload
+      };
+    case RESTART_GAME:
+      return {
+        ...state,
+        isGameComplete: false,
+        completedTime: null
       };
     default:
       return state;
