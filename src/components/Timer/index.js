@@ -16,14 +16,14 @@ class Timer extends PureComponent {
 
   static propTypes = {
     recordTime: PropTypes.func.isRequired,
-    timeTrack: PropTypes.number.isRequired
+    timeTrack: PropTypes.number.isRequired,
+    startTimer: PropTypes.bool.isRequired
   };
 
-  componentDidMount() {
-    this.interval = setInterval(this.tick.bind(this), 1000);
-  }
-
   componentWillReceiveProps(nextProps, nextState) {
+    if (nextProps.startTimer && !this.props.startTimer) {
+      this.interval = setInterval(this.tick.bind(this), 1000);
+    }
     if (
       nextProps.timeTrack === 0 ||
       (nextProps.timeTrack === 0 && this.props.timeTrack > 0)

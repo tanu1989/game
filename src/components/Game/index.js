@@ -21,7 +21,8 @@ class Game extends PureComponent {
   state = {
     ...initialState,
     timeTrack: 0,
-    activeCards: []
+    activeCards: [],
+    startTimer: false
   };
   componentDidMount() {
     this.props.fetchGameData();
@@ -105,7 +106,8 @@ class Game extends PureComponent {
       cardInView && obj.id === cardInView.id ? [] : [...visibleCards, id];
     this.setState(
       state => ({
-        visibleCards: arr
+        visibleCards: arr,
+        startTimer: true
       }),
       () => {
         this.checkConditions(obj);
@@ -129,7 +131,7 @@ class Game extends PureComponent {
       handleGameRestart
     } = this.props;
 
-    const { activeCards, visibleCards, timeTrack } = this.state;
+    const { activeCards, visibleCards, timeTrack, startTimer } = this.state;
 
     return (
       <GameWrapper>
@@ -150,6 +152,7 @@ class Game extends PureComponent {
           <GameGrid
             timeTrack={timeTrack}
             recordTime={this.record}
+            startTimer={startTimer}
             cards={activeCards}
             visibleCards={visibleCards}
             onClick={this.onCardClick}

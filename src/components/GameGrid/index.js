@@ -14,11 +14,16 @@ const GameGrid = ({
   cardsMatched,
   isGameComplete,
   recordTime,
-  timeTrack
+  timeTrack,
+  startTimer
 }) => {
   return (
     <div>
-      <Timer timeTrack={timeTrack} recordTime={recordTime} />
+      <Timer
+        timeTrack={timeTrack}
+        recordTime={recordTime}
+        startTimer={startTimer}
+      />
       <GameTileContainer>
         {cards.map(elem => (
           <GameTile>
